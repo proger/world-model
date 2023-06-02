@@ -1,6 +1,8 @@
 """
 This is a test Gym environment that reads to a file. After testing here it was moved to a fork
-of https://github.com/eloialonso/iris
+of https://github.com/eloialonso/iris:
+
+https://github.com/proger/iris/tree/twist-rollout
 """
 import gym
 from gym import spaces
