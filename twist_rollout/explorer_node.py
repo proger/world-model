@@ -90,7 +90,7 @@ class Recorder:
             ])
         else:
             pose_vector = np.array([-99999., -99999., -99999.])
-        pose_vector.tofile(self.pose_file)
+        pose_vector.tofile(self.pose_file) # this was a bug
 
         twist_vector = np.array([twist_action.linear.x, twist_action.angular.z])
         self.twist_file.write(twist_vector.tobytes())

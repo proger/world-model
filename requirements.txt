@@ -1,0 +1,8 @@
+torch
+torchvision
+tqdm
+einops
+rich
+requests
+wandb
+opencv-python
