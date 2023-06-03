@@ -1,52 +1,13 @@
 import cv2
-
 import torch
 
-from .tokenizer.tokenizer import Tokenizer, Encoder, Decoder
-from .tokenizer.nets import EncoderDecoderConfig
-from .rnn import LM
+from .sim import Sim
 
 
-def load_image_tokenizer(iris_checkpoint='iris.pt'):
-    config = EncoderDecoderConfig(
-        resolution=64,
-        in_channels=3,
-        z_channels=512,
-        ch=64,
-        ch_mult=[1,1,1,1,1]   ,
-        num_res_blocks=2,
-        attn_resolutions=[8,16],
-        out_ch=3,
-        dropout=0.0
-    )
-
-    encoder = Encoder(config)
-    decoder = Decoder(config)
-    tokenizer = Tokenizer(vocab_size=512, embed_dim=512, encoder=encoder, decoder=decoder)
-
-    state_dict = torch.load(iris_checkpoint, map_location='cpu')
-    state_dict = {k[len("tokenizer."):]: v for k, v in state_dict.items() if k.startswith('tokenizer.')}
-    tokenizer.load_state_dict(state_dict, strict=False)
-    tokenizer.eval()
-    return tokenizer
-
-
-def load_world_model(world_model_checkpoint='pool4096_1.pt'):
-#def load_world_model(world_model_checkpoint='megapool_1.pt'):
-    ckpt = torch.load(world_model_checkpoint, map_location='cpu')
-    model = LM(vocab_size=int(ckpt['args']['vocab']),
-               emb_dim=ckpt['args']['rnn_size'],
-               hidden_dim=ckpt['args']['rnn_size'],
-               num_layers=ckpt['args']['num_layers'])
-    model.load_state_dict(ckpt['model'])
-    model.eval()
-    return model
-
-
-class Sim:
-    def __init__(self):
-        self.tokenizer = load_image_tokenizer()
-        self.world_model = load_world_model()
+class InteractiveSim:
+    def __init__(self, sim):
+        self.tokenizer = sim.tokenizer
+        self.world_model = sim.world_model
         self.frame_offset = 5
         self.key_to_action = {
             0: 2, # forward
@@ -166,5 +127,7 @@ class Sim:
 
 if __name__ == '__main__':
     sim = Sim()
-    sim.loop()
+    sim.load_state_dict(torch.hub.load_state_dict_from_url('https://huggingface.co/darkproger/twist-rollout/resolve/main/twist-rollout.pt'))
+    interactive = InteractiveSim(sim)
+    interactive.loop()
 
