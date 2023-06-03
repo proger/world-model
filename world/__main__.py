@@ -2,9 +2,9 @@ import cv2
 
 import torch
 
-from tokenizer.tokenizer import Tokenizer, Encoder, Decoder
-from tokenizer.nets import EncoderDecoderConfig
-from rnn import LM
+from .tokenizer.tokenizer import Tokenizer, Encoder, Decoder
+from .tokenizer.nets import EncoderDecoderConfig
+from .rnn import LM
 
 
 def load_image_tokenizer(iris_checkpoint='iris.pt'):

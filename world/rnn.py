@@ -2,16 +2,11 @@ import argparse
 import math
 from pathlib import Path
 
-from rich.console import Console
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from symbol_tape import Vocabulary, load_u16, SymbolTapeNoPad
-
-console = Console()
-def print(*args, flush=False, **kwargs):
-    console.log(*args, **kwargs)
+from .symbol_tape import Vocabulary, load_u16, SymbolTapeNoPad
 
 
 class LM(nn.Module):

@@ -1,3 +1,8 @@
+"""
+This is a ROS node. This code needs to be dropped to https://github.com/EliaCereda/thymio_example to run.
+
+See also https://github.com/jeguzzi/mighty-thymio for more context
+"""
 import gzip
 import sys
 from typing import Optional
