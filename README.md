@@ -1,5 +1,10 @@
-# twist-rollout
+# world model
 
-Discrete world modeling by recording Coppelia simulations with ROS
+Discrete world modeling by recording Coppelia simulations with ROS.
 
-Please continue to [README.pdf](./README.pdf)
+```
+pip install world-model
+sim # run the simulation
+```
+
+The project report is in [README.pdf](./README.pdf).
