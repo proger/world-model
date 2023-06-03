@@ -6,7 +6,6 @@ Credits to https://github.com/CompVis/taming-transformers
 from dataclasses import dataclass
 from typing import Any, Tuple, Dict
 
-from einops import rearrange
 import torch
 import torch.nn as nn
 
@@ -58,7 +57,8 @@ class Tokenizer(nn.Module):
 
     def compute_loss(self, batch: Batch, **kwargs: Any) -> LossWithIntermediateLosses:
         assert self.lpips is not None
-        observations = self.preprocess_input(rearrange(batch['observations'], 'b t c h w -> (b t) c h w'))
+        _b, _t, c, h, w = batch['observations'].shape
+        observations = self.preprocess_input(batch['observations'].reshape(-1, c, h, w))
         z, z_quantized, reconstructions = self(observations, should_preprocess=False, should_postprocess=False)
 
         # Codebook loss. Notes:
@@ -80,11 +80,11 @@ class Tokenizer(nn.Module):
         z = self.encoder(x)
         z = self.pre_quant_conv(z)
         b, e, h, w = z.shape
-        z_flattened = rearrange(z, 'b e h w -> (b h w) e')
+        z_flattened = z.permute(0, 2, 3, 1).reshape(-1, e)
         dist_to_embeddings = torch.sum(z_flattened ** 2, dim=1, keepdim=True) + torch.sum(self.embedding.weight**2, dim=1) - 2 * torch.matmul(z_flattened, self.embedding.weight.t())
 
         tokens = dist_to_embeddings.argmin(dim=-1)
-        z_q = rearrange(self.embedding(tokens), '(b h w) e -> b e h w', b=b, e=e, h=h, w=w).contiguous()
+        z_q = self.embedding(tokens).reshape(b, h, w, e).permute(0, 3, 1, 2).contiguous()
 
         # Reshape to original
         z = z.reshape(*shape[:-3], *z.shape[1:])

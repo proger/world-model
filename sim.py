@@ -1,9 +1,6 @@
 import cv2
-import numpy as np
 
 import torch
-import torch.nn as nn
-from einops import rearrange
 
 from tokenizer.tokenizer import Tokenizer, Encoder, Decoder
 from tokenizer.nets import EncoderDecoderConfig
@@ -83,7 +80,8 @@ class Sim:
     def render(self, frame_tokens):
         #frame = np.random.RandomState(action).randint(0, 256, (64, 64, 3), dtype=np.uint8)
 
-        z_q = rearrange(self.tokenizer.embedding(frame_tokens), '(b h w) e -> b e h w', b=1, e=512, h=4, w=4).contiguous()
+        b, e, h, w = 1, 512, 4, 4
+        z_q = self.tokenizer.embedding(frame_tokens).reshape(b, h, w, e).permute(0, 3, 1, 2).contiguous()
         frame = self.tokenizer.decode(z_q, should_postprocess=True).squeeze().permute(1, 2, 0).numpy()
         return frame
 

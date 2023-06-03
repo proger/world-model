@@ -1,7 +1,6 @@
 torch
 torchvision
 tqdm
-einops
 rich
 requests
 wandb
