@@ -51,18 +51,19 @@ class CustomEnvironment(gym.Env):
         return self.frames[self.current_position]
 
 
-env = CustomEnvironment()
+if __name__ == '__main__':
+    env = CustomEnvironment()
 
-obs = env.reset()
-done = False
+    obs = env.reset()
+    done = False
 
-while not done:
-    action = env.action_space.sample()
-    obs, reward, done, _ = env.step(action)
-    image = env.render()
+    while not done:
+        action = env.action_space.sample()
+        obs, reward, done, _ = env.step(action)
+        image = env.render()
 
-    cv2.imshow('Frame', image)
-    cv2.waitKey(100)
+        cv2.imshow('Frame', image)
+        cv2.waitKey(100)
 
-cv2.destroyAllWindows()
+    cv2.destroyAllWindows()
 
