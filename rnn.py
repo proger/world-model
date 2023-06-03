@@ -6,7 +6,6 @@ from rich.console import Console
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import wandb
 
 from symbol_tape import Vocabulary, load_u16, SymbolTapeNoPad
 
@@ -323,6 +322,7 @@ def main():
 
     if args.train:
         print(args)
+        import wandb
         wandb.init(project='twist', config=args)
 
         step = 0
