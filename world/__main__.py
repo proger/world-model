@@ -69,16 +69,23 @@ class InteractiveSim:
         frame = cv2.resize(frame, (640, 640), interpolation=cv2.INTER_NEAREST)
         return frame
 
-    def put_text(self, image, text):
+    def put_help(self, image):
+        image = image.copy()
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        font_scale = 0.5
+        font_thickness = 2
+        text_position = (10, image.shape[0] - 10)  # 10 pixels from the left and bottom
+        text = 'arrow keys to move around; space to reset; r to truncate history; q to exit'
+        cv2.putText(image, text, text_position, font, font_scale, (0, 0, 255), font_thickness, cv2.LINE_AA)
+        return image
+
+    def append_text(self, image, text):
         image = image.copy()
         font = cv2.FONT_HERSHEY_SIMPLEX
         font_scale = 1.0
         font_thickness = 2
-
-        text_size, _ = cv2.getTextSize(text, font, font_scale, font_thickness)
-
         text_position = (10, image.shape[0] - 10)  # 10 pixels from the left and bottom
-    
+
         self.tag_history += text
         self.tag_history = self.tag_history[-24:]
         text = self.tag_history
@@ -100,6 +107,7 @@ class InteractiveSim:
                 current_frame_tokens = self.reset()
                 image = self.render(current_frame_tokens)
                 image = self.postprocess_image(image)
+                image = self.put_help(image)
             elif key == 114: # r to reset hidden state from current_frame_tokens
                 current_frame_tokens = self.reset(initial_frame=current_frame_tokens)
                 image = self.render(current_frame_tokens)
@@ -113,11 +121,14 @@ class InteractiveSim:
                     image = self.render(new_frame_tokens)
                 except IndexError:
                     print('index error, ignoring action')
+                    image = self.render(current_frame_tokens)
+                    image = self.postprocess_image(image)
+                    image = self.append_text(image, '!')
                 else:
                     self.state = state
                     current_frame_tokens = new_frame_tokens
                     image = self.postprocess_image(image)
-                    image = self.put_text(image, self.action_to_tag[action])
+                    image = self.append_text(image, self.action_to_tag[action])
 
             cv2.imshow('sim', image)
             key = cv2.waitKey(100) & 0xff
@@ -125,9 +136,12 @@ class InteractiveSim:
         cv2.destroyAllWindows()
 
 
-if __name__ == '__main__':
+def main():
     sim = Sim()
     sim.load_state_dict(torch.hub.load_state_dict_from_url('https://huggingface.co/darkproger/twist-rollout/resolve/main/twist-rollout.pt'))
     interactive = InteractiveSim(sim)
     interactive.loop()
 
+
+if __name__ == '__main__':
+    main()
