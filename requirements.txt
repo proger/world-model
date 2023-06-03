@@ -1,7 +1,0 @@
-torch
-torchvision
-tqdm
-rich
-requests
-wandb
-opencv-python
