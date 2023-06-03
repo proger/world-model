@@ -1,5 +1,7 @@
 # world model
 
+[![PyPI Version](https://img.shields.io/pypi/v/world-model.svg)](https://pypi.python.org/pypi/world-model)
+
 Discrete world modeling by recording Coppelia simulations with ROS. 3 million observations tokenized using VQ-VAE and then modeled using LSTM.
 
 ```
